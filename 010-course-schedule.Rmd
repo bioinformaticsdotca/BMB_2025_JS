@@ -1,3 +1,15 @@
 # Course Schedule
 
-Copy paste a table into https://www.tablesgenerator.com/markdown_tables (select convert to markdown) to create a table in markdown.
+| Time (PST) |         Day 1         | Time (PST) |            Day 2           |
+|:----------:|:---------------------:|:----------:|:--------------------------:|
+|    8:30    |  Arrivals & Check-in  |    8:30    |          Arrivals          |
+|    9:00    | Welcome (Coordinator) |    9:00    |      Module 3 Lecture      |
+|    9:30    |    Module 1 Lecture   |            |                            |
+|    10:30   |     Break (30min)     |    10:00   |        Break (30min)       |
+|    11:00   |      Module 1 Lab     |    10:30   |        Module 3 Lab        |
+|    13:00   |       Lunch (1h)      |    12:30   |  Class photo + Lunch (1h)  |
+|    14:00   |    Module 2 Lecture   |    13:30   |      Module 4 Lecture      |
+|    15:00   |     Break (30min)     |    14:30   |        Break (30min)       |
+|    15:30   |      Module 2 Lab     |    15:00   |        Module 4 Lab        |
+|            |                       |    17:00   | Survey and Closing Remarks |
+|    17:30   |        Finished       |    17:30   |          Finished          |
