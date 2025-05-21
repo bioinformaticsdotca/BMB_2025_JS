@@ -7,7 +7,7 @@ bookdown::gitbook:
         <img src="img/bioinformatics_logo.png" width="90%" alt="bioinformatics.ca logo" style="display:block; margin-left:auto; margin-right:auto; margin-top:15px;">
         </a>
 
-        <li><a href="./">[YOUR WORKSHOP NAME]</a></li>
+        <li><a href="./">Beginner Microbiome Analysis</a></li>
       after: |
        <h1 id="sponsors">Sponsors</h1>
         <center>
