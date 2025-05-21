@@ -36,6 +36,46 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -161,6 +201,523 @@ Coming soon!
 \chapter{Module 1}\label{module-1}
 
 Coming soon!
+
+\chapter{Module 3: Microbiome statistics and visualizations}\label{module-3-microbiome-statistics-and-visualizations}
+
+Material by Juan Santana
+
+This tutorial is part of the 2025 Canadian Bioinformatics Workshops Beginner Microbiome Analysis (Vancouver, BC, May 26-27). It is based on the Amplicon SOP v2 available on the \href{https://github.com/LangilleLab/microbiome_helper/wiki/Amplicon-SOP-v2-(qiime2-2022.11)}{Microbiome Helper repository} and previous workshops designed by Diana Haider, Robert Beiko and Monica Alvaro Fuss.
+
+\section{Table of Contents}\label{table-of-contents}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \hyperref[build-tree]{Build tree}\\
+\item
+  \hyperref[rarefaction-curves]{Generate rarefaction curves}\\
+\item
+  \hyperref[diversity-ordination]{Calculating diversity metrics and generating ordination plots}\\
+\item
+  \hyperref[stacked-bar-chart]{Generate stacked bar chart of taxa relative abundances}\\
+\item
+  \hyperref[ancom]{Identifying differentially abundant features with ANCOM}\\
+\item
+  \hyperref[core-microbiome]{Core microbiome analysis}\\
+\item
+  \hyperref[heatmaps]{Heatmaps}\\
+\item
+  \hyperref[exporting-data]{Exporting data from QIIME 2 for use in other software}\\
+\item
+  \hyperref[18s-its]{Considerations for 18S and ITS data}
+\end{enumerate}
+
+\section{Introduction}\label{introduction}
+
+Modules 2 and 3 offer a step-by-step walkthrough of an end-to-end pipeline for analyzing high-throughput marker gene data using the command-line interface. Commonly used marker genes in microbiome research include 16S ribosomal RNA (rRNA) for prokaryotes, 18S rRNA for eukaryotes, and the internal transcribed spacer (ITS) region for fungi.
+
+In this tutorial, we primarily focus on the same 16S rRNA dataset derived from wild blueberry (\emph{Vaccinium angustifolium}) soil communities from natural and managed habitats we processed in Module 2. At the end of the tutorial, we also provide guidance on processing the 18S rRNA dataset from plastics incubated in a coastal marine environment (plastisphere), as well as the ITS dataset from the gut mycobiome (i.e., fungi) during pregnancy.
+
+You can learn more about these studies in the following publications:
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://apsjournals.apsnet.org/doi/10.1094/PBIOMES-03-17-0012-R}{Variation in Bacterial and Eukaryotic Communities Associated with Natural and Managed Wild Blueberry Habitats}
+\item
+  \href{https://www.frontiersin.org/articles/10.3389/fmicb.2019.01682/full\#B50}{Metagenomic Functional Shifts to Plant Induced Environmental Changes}
+  -\href{https://www.sciencedirect.com/science/article/pii/S0025326X22003836\#s0050}{Microbial pioneers of plastic colonisation in coastal seawaters}
+\item
+  \href{https://gut.bmj.com/content/73/8/1302.long}{Landscape of the gut mycobiome dynamics during pregnancy and its relationship with host metabolism and pregnancy health}
+\end{itemize}
+
+In Module 2, we covered the fundamentals of marker gene analysis, from processing raw reads to generating a filtered feature table. In Module 3, we will explore examples of downstream analyses used to draw biological insights from these data. The workflow described is integrated into the latest release of QIIME 2 (Quantitative Insights into Microbial Ecology, version 2025.4). As introduced in Module 2, this widely used microbiome bioinformatics platform is built around user-developed software packages called plugins, which operate on QIIME 2 artifact files (with the .qza extension). Documentation for these plugins---including tutorials and additional resources---can be found in the \href{https://amplicon-docs.qiime2.org/en/latest/}{QIIME 2 user documentation}. QIIME 2 also offers interpretable visualizations, which can be viewed by opening .qzv files in \href{https://view.qiime2.org/}{QIIME2 View}
+
+Let's set up our Module 3 directory inside \texttt{workspace} and create a symlink to the data we will be using (from Module 2).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd}\NormalTok{ \textasciitilde{}/workspace}
+\FunctionTok{mkdir}\NormalTok{ bmb\_module3 bmb\_module3/16S\_analysis}
+\BuiltInTok{cd}\NormalTok{ bmb\_module3/16S\_analysis}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/16S\_analysis/deblur\_output .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/16S\_analysis/taxa .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/16S\_analysis/Blueberry\_16S\_metadata.tsv .}
+\end{Highlighting}
+\end{Shaded}
+
+If you deactivated your QIIME2 environment, reactivate it with the command below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{conda}\NormalTok{ activate qiime2{-}amplicon{-}2025.4}
+\end{Highlighting}
+\end{Shaded}
+
+When you are finished this tutorial you can deactivate the conda environment using:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{conda}\NormalTok{ deactivate}
+\end{Highlighting}
+\end{Shaded}
+
+Throughout this module, there are some questions aimed to help your understanding of some of the key concepts. You'll find the answers at the bottom of this page, but no one will be marking them.
+
+\section{\texorpdfstring{1. Build tree with \protect\hypertarget{build-tree}{}\href{https://amplicon-docs.qiime2.org/en/latest/references/plugins/fragment-insertion.html\#q2-plugin-fragment-insertion}{SEPP QIIME 2 plugin}}{1. Build tree with SEPP QIIME 2 plugin}}\label{build-tree-with-sepp-qiime-2-plugin}
+
+\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5904434/}{SEPP} (SATé-enabled Phylogenetic Placement) is a tool used to place short DNA sequences---such as 16S rRNA amplicon sequence variants (ASVs)---into an existing, high-quality reference phylogenetic tree. This is particularly helpful when you are working with microbiome data and want to infer evolutionary relationships more accurately. We will use QIIME 2's \texttt{q2-fragment-insertion} plugin to place ASVs derived from our \textbf{16S data} into a reference phylogenetic tree using the command below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ fragment{-}insertion sepp}
+  \ExtensionTok{{-}{-}i{-}representative{-}sequences}\NormalTok{ deblur\_output/rep\_seqs\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}reference{-}database}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module3/16S\_analysis/sepp{-}refs{-}gg{-}13{-}8.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}tree}\NormalTok{ asvs{-}tree.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}placements}\NormalTok{ insertion{-}placements.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}threads}\NormalTok{ 4}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Due to memory constraints, you can instead copy the output into your folder with the following command:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module3/output/16S\_analysis/asvs{-}tree.qza .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module3/output/16S\_analysis/insertion{-}placements.qza .}
+\end{Highlighting}
+\end{Shaded}
+
+High-quality reference phylogenetic trees can be downloaded from \href{https://docs.qiime2.org/2024.10/data-resources/}{QIIME2's data resources}. However, it is important to ensure that the reference tree used for sequence placement matches the same reference database used for taxonomic classification (e.g., Greengenes or SILVA). In our workflow, we use \texttt{sepp-refs-gg-13-8.qza}, as our sequences were classified using the Greengenes database. Alternatively, custom reference files can be specified for placing other types of amplicons. However, for marker genes such as \textbf{18S and ITS}, the recommended approach is to construct a \emph{de novo} phylogenetic tree, as outlined in section 9. \hyperref[9-considerations-for-18s-and-its-data]{Considerations for 18S and ITS data} and and further detailed in the \href{https://github.com/LangilleLab/microbiome_helper/wiki/Amplicon-SOP-v2-(qiime2-2022.11)}{Microbiome Helper repository}.
+
+\section{2. Generate rarefaction curves}\label{rarefaction-curves}
+
+After inferring ASVs from our sequence reads, we can generate \textbf{rarefaction curves} to evaluate whether our sequencing depth was sufficient to capture most of the microbial diversity in each sample. The command below will generate these plots. The \texttt{-\/-p-max-depth} parameter sets the maximum sequencing depth to sample across. Inspect the \texttt{deblur\_table\_final\_summary.qzv} file (created in Module 2) using \href{https://view.qiime2.org/}{QIIME2 View} to determine this number. For our 16S dataset, the sample with the highest number of reads contains 8,650 sequences, so we'll use that as the max depth.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ diversity alpha{-}rarefaction }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}max{-}depth}\NormalTok{ 8650 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}steps}\NormalTok{ 20 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}phylogeny}\NormalTok{ asvs{-}tree.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ rarefaction\_curves.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+This will produce a \texttt{.qzv} file that can be opened in QIIME 2 View to explore the number of observed features (as well as two alpha diversity metrics: Shannon index and Faith's phylogenetic diversity) across rarefied sequencing depths for each sample.
+
+\textbf{Question 1: What is a good rarefaction depth for diversity analysis?}
+
+\section{3. Calculating diversity metrics and generating ordination plots}\label{diversity-ordination}
+
+QIIME 2 can calculate commonly used alpha and beta diversity metrics---including Faith's Phylogenetic Diversity, Shannon diversity, and UniFrac distances---using a single command. Ordination plots (e.g., PCoA plots based on weighted UniFrac distances) are also generated automatically. Before calculating these metrics, QIIME 2 rarefies all samples to the same sequencing depth to ensure fair comparisons. The \texttt{-\/-p-sampling-depth} parameter defines this cutoff. Any samples with fewer reads than this threshold will be excluded from the analysis. Based on the rarefaction curves we generated earlier, we determined that the lowest reasonable sequencing depth across all samples is \textbf{3,432} reads. Using this value ensures we retain all samples while still capturing most of the microbial diversity.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ diversity core{-}metrics{-}phylogenetic }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}phylogeny}\NormalTok{ asvs{-}tree.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}sampling{-}depth}\NormalTok{ 3432  }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}n{-}jobs{-}or{-}threads}\NormalTok{ 4 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}output{-}dir}\NormalTok{ diversity}
+\end{Highlighting}
+\end{Shaded}
+
+This command will output a \texttt{diversity/} folder containing:
+
+\emph{Alpha diversity vectors (e.g., Shannon, Faith's PD)
+}Beta diversity distance matrices (e.g., UniFrac, Bray-Curtis)
+\emph{Rarefied feature table
+}PCoA ordination plots (\texttt{emperor.qzv} files)
+
+You can explore these ordination plots to visually assess whether microbial communities cluster based on sample groupings (e.g., natural vs.~managed habitats).However, to statistically and visually compare alpha diversity across sample categories (e.g., habitat type), you have to generate boxplots and perform statistical tests using the following command:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ diversity alpha{-}group{-}significance }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}alpha{-}diversity}\NormalTok{ diversity/shannon\_vector.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ diversity/shannon\_compare\_groups.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Hint:To analyze other alpha diversity metrics, simply replace \texttt{shannon\_vector.qza} with another file from the \texttt{diversity/} directory. To view available metrics, run:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ls}\NormalTok{ diversity/}\PreprocessorTok{*}\NormalTok{\_vector.qza}
+\end{Highlighting}
+\end{Shaded}
+
+Note that you can also export this or any other diversity metric file (ending in \emph{.qza}) using \texttt{qiime\ tools\ export} and analyze them with a different program (e.g., R, Python, Excel).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ tools export }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}input{-}path}\NormalTok{ diversity/shannon\_vector.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}output{-}path}\NormalTok{ exported\_shannon}
+\end{Highlighting}
+\end{Shaded}
+
+This will produce a file called \texttt{alpha-diversity.tsv} inside the \texttt{exported\_shannon/} folder.
+
+\textbf{Question 2: are there any significant differences in alpha diversity between any of our metadata categories?}
+
+\textbf{Question 3: which metadata category appears to provide more separation in the beta diversity PCoA plots?}
+
+If you want to run a PERMANOVA test to assess whether beta diversity differs significantly between groups, you can use the following command. Be sure to update the command with the specific beta diversity metric you're analyzing (e.g., Bray-Curtis, UniFrac) and replace category with the appropriate column name from your metadata file that defines your groups of interest.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ diversity beta{-}group{-}significance }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}distance{-}matrix}\NormalTok{ diversity/bray\_curtis\_distance\_matrix.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}column}\NormalTok{ Category }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ diversity/bray\_curtis\_compare\_groups\_category.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+This will produce a \texttt{.qzv} file containing PERMANOVA results and boxplots for visualizing distances within and between groups.
+
+\textbf{Question 4: what do you mean I'm getting an error message? It should be working fine, it worked last time! I can't see what I'm doing wro\ldots{} oooooh there we go, I see now :)}
+
+\section{4. Generate stacked bar chart of taxa relative abundances}\label{stacked-bar-chart}
+
+A useful way to visualize the composition of microbial communities across samples is through interactive stacked bar charts of taxonomic relative abundances. This type of plot allows you to explore differences in microbial composition at various taxonomic levels (e.g., phylum, genus) across experimental groups. You can generate the visualization using the command below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ taxa barplot }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}taxonomy}\NormalTok{ taxa/classification.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ taxa\_barplot.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+The interactive \texttt{.qzv} file generated with this command can be inspected with the QIIME2 viewer. In the plot you can explore dominant taxa across samples or groups, navigate between taxonomic levels (kingdom to species) and compare relative abundances between metadata-defined sample groups.
+
+\emph{Hint: your metadata file includes any grouping columns you want to use to color or group the samples in the visualization (e.g., treatment, site, time point).}
+
+\textbf{Question 5: can you identify any patterns between the metadata groups?}
+
+\section{5. Identifying differentially abundant features with ANCOM}\label{ancom}
+
+\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4450248/}{ANCOM} (Analysis of Composition of Microbiomes) is a statistical method used to identify taxa (or features) that differ significantly in relative abundance between sample groups. ANCOM is robust to the compositional nature of microbiome data and does not assume a particular distribution for the features. However, ANCOM requires that all features in the table be non-zero, so a pseudocount (commonly set to 1) must first be added to avoid issues with zeros in the count matrix. The command below creates a new feature table where a count of 1 is added to all zero entries.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ composition add{-}pseudocount }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}pseudocount}\NormalTok{ 1 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}composition{-}table}\NormalTok{ deblur\_output/deblur\_table\_final\_pseudocount.qza}
+\end{Highlighting}
+\end{Shaded}
+
+We then run ANCOM using the command below. \texttt{-\/-m-metadata-column} defines the groups you'd like to compare (e.g., Treatment, Site, Timepoint, etc.) according to the columns in your metadata file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ composition ancom }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final\_pseudocount.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}column}\NormalTok{ category }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}output{-}dir}\NormalTok{ ancom\_output}
+\end{Highlighting}
+\end{Shaded}
+
+The results from ANCOM will be saved in the \texttt{ancom\_output/} directory.The key file is ancom.qzv, which can be viewed interactively at QIIME 2 View. The output highlights features (e.g., ASVs, OTUs, or taxa) that are differentially abundant between the specified groups based on their W statistic (number of significant pairwise comparisons).
+
+\emph{Hint: ANCOM is sensitive to sparsity in the data. Consider filtering low-abundance or low-frequency features before running ANCOM to improve detection power and reduce false positives. Alternatively, we can use ANCOM-BC (see below)}
+
+ANCOM-BC addresses limitations in the original ANCOM method by incorporating bias correction and estimating absolute abundances from compositional data. It performs better under sparsity and unequal library sizes. Note that the \texttt{-\/-p-formula} parameter lets you specify covariates or design models (e.g., Treatment + Timepoint), in our workflow we only test for significant abundances based on the ``category'' variable. In addition, we supply the original raw counts instead of the compositionally transformed table.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ composition ancombc }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}formula}\NormalTok{ category }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}output{-}dir}\NormalTok{ ancombc\_output/ }
+\end{Highlighting}
+\end{Shaded}
+
+While \texttt{qiime\ composition\ ancombc} produces a \texttt{.qza} file of differentials (log-fold changes and statistics), QIIME 2 does not currently provide built-in commands to visualize this artifact as a \texttt{.qzv}. Therefore, we use another command to generate visualizations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ composition da{-}barplot }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}data}\NormalTok{ ancombc\_output/differentials.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}significance{-}threshold}\NormalTok{ 0.05 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}effect{-}size{-}threshold}\NormalTok{ 1.0 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ ancombc\_output/ancombc\_results.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+The resultant \texttt{.qzv} barplot will show you features significantly enriched in one or another condition.
+
+\textbf{Question 6: Does ANCOM identify any differentially abundant taxa between any of the metadata groups? If so, which one(s)? Is the output from ANCOM-BC any different?}
+
+\section{6. Identifying shared features across groups of samples}\label{core-microbiome}
+
+The core microbiome refers to the set of microbial taxa consistently found across a group of samples or within specific treatment groups. Identifying core taxa helps understand the stable and potentially important microbes in your system. In QIIME2 we can filter features by prevalence across samples using the command below. \texttt{-p-min-fraction\ 0.8} means features must be present in 80\% of samples to be considered ``core''.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ feature{-}table core{-}features }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}min{-}fraction}\NormalTok{ 0.8 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ core\_features.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+This will output a feature table summary with the fraction of the ASVs shared across all samples. The core microbiome plugin \texttt{qiime\ feature-table\ core-features} doesn't have a an option to group samples by treatment, so, if you want to identify the shared ASVs across samples from a group (e.g.~managed) you need to subset your feature table first by treatment group using \texttt{qiime\ feature-table\ filter-samples}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ feature{-}table filter{-}samples }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}where} \StringTok{"[category]=\textquotesingle{}Managed\textquotesingle{}"} \DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}filtered{-}table}\NormalTok{ table\_managed.qza}
+\end{Highlighting}
+\end{Shaded}
+
+We can then run \texttt{qiime\ feature-table\ core-features} on the filtered table \texttt{table\_managed.qza} to identify shared ASVs across ``Managed'' samples.
+
+\section{7. Heatmaps}\label{heatmaps}
+
+Heatmaps visualize abundance patterns of taxa across samples or groups, allowing easy spotting of taxa that vary in abundance or co-occur across conditions. We can generate these heatmaps using \texttt{qiime\ feature-table\ heatmap}. However, raw feature tables at the ASV level often contain thousands of features, which can make heatmaps visually overwhelming and difficult to interpret. To create a clearer and more interpretable heatmap, you can collapse your feature table to a higher taxonomic rank, such as genus or family, before visualization, using the command below. \texttt{-\/-p-level} sets the taxonomic rank, here we will collapse at the Class level.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\ExtensionTok{qiime}\NormalTok{ taxa collapse }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}taxonomy}\NormalTok{ taxa/classification.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}level}\NormalTok{ 3 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}collapsed{-}table}\NormalTok{ deblur\_output/table\_class.qza}
+\end{Highlighting}
+\end{Shaded}
+
+Now we generate the heatmap using the collapsed class-level table.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ feature{-}table heatmap }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}i{-}table}\NormalTok{ deblur\_output/table\_class.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}sample{-}metadata{-}file}\NormalTok{ Blueberry\_16S\_metadata.tsv }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}m{-}sample{-}metadata{-}column}\NormalTok{ category }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}metric}\NormalTok{ braycurtis }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}p{-}color{-}scheme}\NormalTok{ RdYlBu }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}o{-}visualization}\NormalTok{ heatmap\_class.qzv}
+\end{Highlighting}
+\end{Shaded}
+
+Open the resulting \texttt{heatmap\_class.qzv} in QIIME 2 View to interactively explore taxa abundance patterns across samples.
+
+\section{8. Exporting data from QIIME 2 for use in other software}\label{exporting-data}
+
+While QIIME 2 offers a wide range of tools for microbial community analysis, you may want to perform additional custom analyses in software like R, Python, or MATLAB. To do so, you'll need to export your QIIME 2 artifacts into formats that are compatible with these platforms.
+
+Representative sequences (i.e., ASVs) are stored in a \texttt{.qza} artifact that contains the DNA sequences used in downstream analysis. To export them into a standard FASTA format, use the following command:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ tools export }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}input{-}path}\NormalTok{ deblur\_output/rep\_seqs\_final.qza }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}output{-}path}\NormalTok{ deblur\_output\_exported}
+\end{Highlighting}
+\end{Shaded}
+
+Your sequences will be saved as \texttt{dna-sequences.fasta} inside the \texttt{deblur\_output\_16S\_exported} folder. This file can be read by any downstream tool that accepts FASTA files.
+
+\href{https://academic.oup.com/gigascience/article/1/1/2047-217X-1-7/2656152}{BIOM} (Biological Observation Matrix) is a standardized format for representing feature tables, typically containing:
+-Rows = features (e.g., ASVs, OTUs, taxa)
+-Columns = samples
+-Cells = abundance values (counts, relative abundances, etc.)
+-Optional metadata (taxonomy, sample info)
+
+BIOM files are widely used in microbiome analysis and supported by R packages like phyloseq, microbiome, and tools in Python such as scikit-bio and biom-format.To export a BIOM table (with taxonomy added as metadata) you can use the commands below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#First we fix taxonomy header with sed (required for biom add{-}metadata)}
+\FunctionTok{sed} \AttributeTok{{-}i} \AttributeTok{{-}e} \StringTok{\textquotesingle{}1 s/Feature/\#Feature/\textquotesingle{}} \AttributeTok{{-}e} \StringTok{\textquotesingle{}1 s/Taxon/taxonomy/\textquotesingle{}}\NormalTok{ taxa/taxonomy.tsv}
+
+\CommentTok{\#Second we export the raw feature table and create the biom table}
+\ExtensionTok{qiime}\NormalTok{ tools export }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}input{-}path}\NormalTok{ deblur\_output/deblur\_table\_final.qza }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}output{-}path}\NormalTok{ deblur\_output\_exported}
+
+\CommentTok{\#Third we add taxonomy metadata to the BIOM file}
+\ExtensionTok{biom}\NormalTok{ add{-}metadata }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}i}\NormalTok{ deblur\_output\_exported/feature{-}table.biom }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}o}\NormalTok{ deblur\_output\_exported/feature{-}table\_w\_tax.biom }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}observation{-}metadata{-}fp}\NormalTok{ taxa/taxonomy.tsv }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}sc{-}separated}\NormalTok{ taxonomy}
+\CommentTok{\#Last we convert the BIOM file to TSV format (tab{-}separated values)}
+\ExtensionTok{biom}\NormalTok{ convert }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}i}\NormalTok{ deblur\_output\_exported/feature{-}table\_w\_tax.biom }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}o}\NormalTok{ deblur\_output\_exported/feature{-}table\_w\_tax.txt }\DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}to{-}tsv} \DataTypeTok{\textbackslash{}}
+   \AttributeTok{{-}{-}header{-}key}\NormalTok{ taxonomy}
+\end{Highlighting}
+\end{Shaded}
+
+This will give you a plain-text feature table (feature-table\_w\_tax.txt) with taxonomy annotations in the header row, which is especially useful for tools like R (phyloseq), Excel, or even manual inspection.
+
+To export the tree of your ASVs in a \texttt{.nwk} format, use the command below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ tools export }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}input{-}path}\NormalTok{ asvs{-}tree.qza }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}output{-}path}\NormalTok{ deblur\_output\_exported}
+\end{Highlighting}
+\end{Shaded}
+
+\section{9. Considerations for 18S and ITS data}\label{18s-its}
+
+Most of the analyses described in this tutorial apply equally to 18S and ITS datasets, \textbf{with one key exception}: building a phylogenetic tree. Unlike 16S data, 18S and ITS amplicons generally lack a universally accepted reference phylogeny. Therefore, we must generate \emph{de novo} phylogenetic trees.
+
+To start, create symbolic links to the relevant data folders for your 18S and ITS datasets:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd}\NormalTok{ \textasciitilde{}/workspace/bmb\_module3/}
+\FunctionTok{mkdir}\NormalTok{ 18S\_analysis}
+\BuiltInTok{cd}\NormalTok{ 18S\_analysis}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/18S\_analysis/deblur\_output .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/18S\_analysis/taxa .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/18S\_analysis/Plastisphere\_18S\_metadata.tsv .}
+
+\BuiltInTok{cd}\NormalTok{ \textasciitilde{}/workspace/bmb\_module3/}
+\FunctionTok{mkdir}\NormalTok{ ITS\_analysis}
+\BuiltInTok{cd}\NormalTok{ ITS\_analysis}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/ITS\_analysis/deblur\_output .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/ITS\_analysis/taxa .}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module2/output/ITS\_analysis/pregnancy\_ITS\_metadata.tsv .}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Building a de novo tree for 18S}\label{building-a-de-novo-tree-for-18s}
+
+First, we'll need to make a \emph{de novo} multiple-sequence alignment of the ASVs using \href{https://mafft.cbrc.jp/alignment/software/}{MAFFT}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd}\NormalTok{ \textasciitilde{}/workspace/bmb\_module3/18S\_analysis}
+\FunctionTok{mkdir}\NormalTok{ tree\_out}
+
+\ExtensionTok{qiime}\NormalTok{ alignment mafft }\AttributeTok{{-}{-}i{-}sequences}\NormalTok{ deblur\_output/rep\_seqs\_final.qza }\DataTypeTok{\textbackslash{}}
+                      \AttributeTok{{-}{-}p{-}n{-}threads}\NormalTok{ 4 }\DataTypeTok{\textbackslash{}}
+                      \AttributeTok{{-}{-}o{-}alignment}\NormalTok{ tree\_out/rep\_seqs\_final\_aligned.qza}
+\end{Highlighting}
+\end{Shaded}
+
+Variable positions in the alignment need to be masked before FastTree is run, which can be done with the command below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ alignment mask }\AttributeTok{{-}{-}i{-}alignment}\NormalTok{  tree\_out/rep\_seqs\_final\_aligned.qza }\DataTypeTok{\textbackslash{}}
+                     \AttributeTok{{-}{-}o{-}masked{-}alignment}\NormalTok{  tree\_out/rep\_seqs\_final\_aligned\_masked.qza}
+\end{Highlighting}
+\end{Shaded}
+
+We finally run FastTree on this masked multiple-sequence alignment to make our tree with the command below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ phylogeny fasttree }\AttributeTok{{-}{-}i{-}alignment}\NormalTok{ tree\_out/rep\_seqs\_final\_aligned\_masked.qza }\DataTypeTok{\textbackslash{}}
+                         \AttributeTok{{-}{-}p{-}n{-}threads}\NormalTok{ 4 }\DataTypeTok{\textbackslash{}}
+                         \AttributeTok{{-}{-}o{-}tree}\NormalTok{ tree\_out/rep\_seqs\_final\_aligned\_masked\_tree}
+\end{Highlighting}
+\end{Shaded}
+
+FastTree returns an unrooted tree. One basic way to add a root to a tree is to add it at the midpoint of the largest tip-to-tip distance in the tree, which is done with this command:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{qiime}\NormalTok{ phylogeny midpoint{-}root }\AttributeTok{{-}{-}i{-}tree}\NormalTok{ tree\_out/rep\_seqs\_final\_aligned\_masked\_tree.qza }\DataTypeTok{\textbackslash{}}
+                              \AttributeTok{{-}{-}o{-}rooted{-}tree}\NormalTok{ tree\_out/rep\_seqs\_final\_aligned\_masked\_tree\_rooted.qza}
+\end{Highlighting}
+\end{Shaded}
+
+Let's rename the tree and place it in our analysis folder.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cp}\NormalTok{ tree\_out/rep\_seqs\_final\_aligned\_masked\_tree\_rooted.qza asvs{-}tree.qza}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Due to memory or time constraints, you may opt to use a tree that has already been computed. Use the following command to create symbolic links to precomputed trees}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd}\NormalTok{ \textasciitilde{}/workspace/bmb\_module3/18S\_analysis}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module3/output/18S\_analysis/asvs{-}tree.qza .}
+
+\BuiltInTok{cd}\NormalTok{ \textasciitilde{}/workspace/bmb\_module3/ITS\_analysis}
+\FunctionTok{ln} \AttributeTok{{-}s}\NormalTok{ \textasciitilde{}/CourseData/MIC\_data/bmb\_module3/output/ITS\_analysis/asvs{-}tree.qza .}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Building the ITS tree}\label{building-the-its-tree}
+
+Repeat the same commands shown above, but make sure you use the \texttt{deblur\_output} from the ITS analysis. This will generate a \emph{de novo} tree for your ITS dataset.
+
+Once you have generated or linked the \emph{de novo} trees for your 18S and ITS data, you can proceed with all downstream analyses --- including diversity metrics, ordinations, and statistical testing --- just as you would with 16S data.
+
+\section{Answers}\label{answers}
+
+\textbf{Question 1: What is a good rarefaction depth for diversity analysis?}
+
+A cut-off of 4,000 reads will be sufficient: the curve plateaus around this depth and we won't exclude any samples.
+
+\textbf{Question 2: are there any significant differences in alpha diversity between any of our metadata categories?}
+
+There are significant differences in richness and phylogenetic diversity between forest and managed environment samples. There are no significant differences between bulk and rhizosphere soil.
+
+\textbf{Question 3: which metadata category appears to provide more separation in the beta diversity PCoA plots?}
+
+This is hard to say just by looking at the Emperor plots provided by QIIME2, but the forest/managed category appears to exhibit more distinct separation. The PERMANOVA test from the \texttt{beta-group-significance} command shows this as well.
+
+\textbf{Question 4: what do you mean I'm getting an error message? It should be working fine, it worked last time! I can't see what I'm doing wro\ldots{} oooooh there we go, I see now :)}
+
+There is a typo in \texttt{-\/-m-metadata-column\ Category}: The ``C'' should be lowercase, matching the column header in your metadata file. ;)
+
+\textbf{Question 5: can you identify any patterns between the metadata groups?}
+
+Because stacked barcharts are limited in their analytical capabilities, it is hard to discern anything except very obvious patterns.
+
+\textbf{Question 6: Does ANCOM identify any differentially abundant taxa between forest and managed environments?}
+
+One ASVs is identified as differentially abundant between forest and managed environments using ANCOM. You can look up the identity of each ASV in the taxonomy.tsv file. With ANCOM-BC many more ASVs are identified as diferentially abundant.
 
   \bibliography{book.bib,packages.bib}
 
